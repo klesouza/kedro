@@ -100,6 +100,7 @@ def local_config(tmp_path):
             "type": "CSVLocalDataSet",
             "filepath": filepath,
             "save_args": {"index": False},
+            "versioned": '{{ versioned }}'
         },
         "boats": {"type": "MemoryDataSet"},
     }
@@ -166,6 +167,13 @@ class TestConfigLoader:
         (tmp_path / "local").mkdir(exist_ok=True)
         catalog = ConfigLoader(conf_paths).get("catalog*.yml")
         assert catalog == base_config
+    
+    @use_config_dir
+    def test_load_base_config_template(self, conf_paths):
+        """Make sure templated variables are replaced"""
+        
+        catalog = ConfigLoader(conf_paths, context={"versioned": False}).get("catalog*")
+        assert catalog['cars']['versioned'] == 'False'
 
     @use_proj_catalog
     def test_duplicate_patterns(self, tmp_path, conf_paths, base_config):

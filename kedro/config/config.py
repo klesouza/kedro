@@ -105,7 +105,7 @@ class ConfigLoader:
 
     """
 
-    def __init__(self, conf_paths: Union[str, Iterable[str]]):
+    def __init__(self, conf_paths: Union[str, Iterable[str]], context: Dict[str, Any] = None):
         """Instantiate a ConfigLoader.
 
         Args:
@@ -125,6 +125,7 @@ class ConfigLoader:
 
         self.conf_paths = _remove_duplicates(conf_paths)
         self.logger = logging.getLogger(__name__)
+        self.context = context
 
     def get(self, *patterns: str) -> Dict[str, Any]:
         """Recursively scan for configuration files, load and merge them, and
@@ -171,7 +172,7 @@ class ConfigLoader:
                     ",".join(str(seen) for seen in sorted(seen_files)),
                 )
                 config_files = [cf for cf in config_files if cf not in seen_files]
-            new_conf = _load_config(config_files)
+            new_conf = _load_config(config_files, self.context)
 
             common_keys = config.keys() & new_conf.keys()
             if common_keys:
@@ -193,7 +194,7 @@ class ConfigLoader:
         return config
 
 
-def _load_config(config_files: List[Path]) -> Dict[str, Any]:
+def _load_config(config_files: List[Path], context: Dict[str, Any] = None) -> Dict[str, Any]:
     """Recursively load all configuration files, which satisfy
     a given list of glob patterns from a specific path.
 
@@ -228,7 +229,7 @@ def _load_config(config_files: List[Path]) -> Dict[str, Any]:
     for config_file in config_files:
         cfg = {
             k: v
-            for k, v in anyconfig.load(config_file).items()
+            for k, v in anyconfig.load(config_file, ac_context=context, ac_template=(context is not None)).items()
             if not k.startswith("_")
         }
         _check_dups(config_file, cfg)

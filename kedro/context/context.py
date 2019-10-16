@@ -72,7 +72,7 @@ class KedroContext(abc.ABC):
 
     CONF_ROOT = "conf"
 
-    def __init__(self, project_path: Union[Path, str], env: str = None):
+    def __init__(self, project_path: Union[Path, str], env: str = None, context: Dict[str, Any] = None):
         """Create a context object by providing the root of a Kedro project and
         the environment configuration subfolders (see ``kedro.config.ConfigLoader``)
 
@@ -100,6 +100,7 @@ class KedroContext(abc.ABC):
 
         self._project_path = Path(project_path).expanduser().resolve()
         self.env = env or "local"
+        self.context = context
         self._setup_logging()
 
     @property
@@ -276,7 +277,7 @@ class KedroContext(abc.ABC):
             Instance of `ConfigLoader`.
 
         """
-        return ConfigLoader(conf_paths)
+        return ConfigLoader(conf_paths, context=self.context)
 
     def _get_config_loader(self) -> ConfigLoader:
         """A hook for changing the creation of a ConfigLoader instance.
