@@ -163,6 +163,7 @@ def cli():
     callback=_reformat_load_versions,
 )
 @click.option("--pipeline", type=str, default=None, help=PIPELINE_ARG_HELP)
+@click.option("--templated", type=str, default=None, multiple=False) #TODO: add help
 def run(
     tag,
     env,
@@ -174,6 +175,7 @@ def run(
     from_inputs,
     load_version,
     pipeline,
+    templated
 ):
     """Run the pipeline."""
     if parallel and runner:
@@ -185,7 +187,13 @@ def run(
         runner = "ParallelRunner"
     runner_class = load_obj(runner, "kedro.runner") if runner else SequentialRunner
 
-    context = load_context(Path.cwd(), env=env)
+    template_context = None
+    if templated:
+        template_context = { k[0]:k[1] 
+                                for k in [ (l.split('=')+([None]*2))[:2] 
+                                    for l in templated.split(',')] }
+
+    context = load_context(Path.cwd(), env=env, context=template_context)
     context.run(
         tags=tag,
         runner=runner_class(),

@@ -29,7 +29,7 @@
 """Application entry point."""
 
 from pathlib import Path
-from typing import Iterable, Type, Dict
+from typing import Iterable, Type, Dict, Any
 
 from kedro.context import KedroContext, load_context, KedroContextError
 from kedro.runner import AbstractRunner
@@ -59,6 +59,7 @@ def main(
     from_nodes: Iterable[str] = None,
     to_nodes: Iterable[str] = None,
     from_inputs: Iterable[str] = None,
+    context=Dict[str,Any] = None
 ):
     """Application main entry point.
 
@@ -81,7 +82,7 @@ def main(
             starting point of the new ``Pipeline``.
 
     """
-    project_context = load_context(Path.cwd(), env=env)
+    project_context = load_context(Path.cwd(), env=env, context=context)
     project_context.run(
         tags=tags,
         runner=runner,
