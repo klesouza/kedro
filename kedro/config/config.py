@@ -111,6 +111,8 @@ class ConfigLoader:
         Args:
             conf_paths: Non-empty path or list of paths to configuration
                 directories.
+            context: An optional dictionary providing context to the Jinja template engine
+                when rendering configuration files.
         Raises:
             ValueError: If ``conf_paths`` is empty.
 

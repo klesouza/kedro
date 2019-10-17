@@ -107,6 +107,9 @@ overwrite its contents."""
 
 LOAD_VERSION_HELP = """Specify a particular dataset version (timestamp) for loading."""
 
+TEMPLATED_ARG_HELP = """Provide a comma separated list of key=value pairs to be passed as context
+to the Jinja template engine when rendering configuration files"""
+
 
 def _split_string(ctx, param, value):
     return [item for item in value.split(",") if item]
@@ -163,7 +166,7 @@ def cli():
     callback=_reformat_load_versions,
 )
 @click.option("--pipeline", type=str, default=None, help=PIPELINE_ARG_HELP)
-@click.option("--templated", type=str, default=None, multiple=False) #TODO: add help
+@click.option("--templated", type=str, default=None, multiple=False, help=TEMPLATED_ARG_HELP)
 def run(
     tag,
     env,

@@ -80,6 +80,8 @@ def main(
             end point of the new ``Pipeline``.
         from_inputs: An optional list of input datasets which should be used as a
             starting point of the new ``Pipeline``.
+        context: An optional dictionary providing context to the Jinja template engine
+            when rendering configuration files.
 
     """
     project_context = load_context(Path.cwd(), env=env, context=context)
